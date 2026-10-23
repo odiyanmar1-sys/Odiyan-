@@ -1,0 +1,44 @@
+
+import matplotlib.pyplot as plt
+from tensorflow.keras.datasets import fashion_mnist
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+# Load dataset
+(X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
+
+# Use smaller dataset
+X_train = X_train[:10000].reshape(10000, -1) / 255.0
+y_train = y_train[:10000]
+
+X_test = X_test[:2000].reshape(2000, -1) / 255.0
+y_test = y_test[:2000]
+
+# Train and compare SVM kernels
+kernels = ['linear', 'poly', 'rbf']
+accuracies = []
+
+for kernel in kernels:
+    model = SVC(kernel=kernel)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    accuracies.append(accuracy)
+
+    print(f"{kernel.capitalize()} SVM Accuracy: {accuracy:.4f}")
+
+# Display comparison
+print("\nSVM PERFORMANCE COMPARISON")
+
+for kernel, accuracy in zip(kernels, accuracies):
+    print(f"{kernel.capitalize():12}: {accuracy:.4f}")
+
+# Plot results
+plt.bar(['Linear', 'Polynomial', 'RBF'], accuracies)
+plt.xlabel("Kernel")
+plt.ylabel("Accuracy")
+plt.title("SVM Kernel Performance on Fashion MNIST")
+plt.ylim(0, 1)
+
+plt.show()
